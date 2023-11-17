@@ -60,3 +60,13 @@ variable "bucket_name" {
   type = string
   default = ""
 }
+
+
+/*
+variable "iam_users" {
+  type        = list(any)
+  default     = ["user1", "user2", "user3", "user4"]
+  #                 [0]      [1]       [2]     [3]
+  description = "description"
+}
+*/
