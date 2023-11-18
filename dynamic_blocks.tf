@@ -4,7 +4,6 @@ resource "aws_vpc" "main" {
         Name = "sg_vpc"
     }
 }
-
 variable "ingress_rules" {
     type = list(object({
         description = string
@@ -19,21 +18,21 @@ variable "ingress_rules" {
             description = "allow ssh from my home internet"
             from_port = 22
             to_port = 22
-            protocol = tcp
+            protocol = "tcp"
             cidr_blocks = ["192.168.32.24/30"]
         },
         {
             description = "allow application from load balancer"
             from_port = 80
             to_port = 80
-            protocol = tcp
+            protocol = "tcp"
             cidr_blocks = ["0.0.0.0/0"] 
         },
         {
             description = "allow application 443 from load balancer"
             from_port = 443
             to_port = 443
-            protocol = tcp
+            protocol = "tcp"
             cidr_blocks = ["0.0.0.0/0"] 
         }
     ]
