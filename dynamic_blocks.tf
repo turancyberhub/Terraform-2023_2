@@ -5,16 +5,6 @@ resource "aws_vpc" "main" {
   }
 }
 
-variable "ingress_rule_ports" {
-  type    = list(any)
-  default = ["80", "443", "8080", "8888", "22"]
-}
-
-variable "ingress_rule_cidr_blocks" {
-  type    = list(any)
-  default = ["0.0.0.0/0", "192.168.1.1/32", "192.168.1.0/32"]
-}
-
 variable "ingress_rules" {
   type = list(object({
     description = string
@@ -49,6 +39,26 @@ variable "ingress_rules" {
   ]
 }
 
+variable "egress_rules" {
+  type = list(object({
+    description = string
+    from_port   = number
+    to_port     = number
+    protocol    = string
+    cidr_blocks = list(string)
+  }))
+
+  default = [
+    {
+      description = "provide access to everywhere"
+      from_port   = 0
+      to_port     = 0
+      protocol    = "-1"
+      cidr_blocks = ["0.0.0.0/0"]
+    }
+  ]
+}
+
 resource "aws_security_group" "allow_tls" {
   name        = "allow_tls"
   description = "Allow TLS inbound traffic"
@@ -65,11 +75,15 @@ resource "aws_security_group" "allow_tls" {
     }
   }
 
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
+  dynamic "egress" {
+    for_each = var.egress_rules
+    content {
+      description = egress.value.description
+      from_port   = egress.value.from_port
+      to_port     = egress.value.to_port
+      protocol    = egress.value.protocol
+      cidr_blocks = egress.value.cidr_blocks
+    }
   }
 
   tags = {
