@@ -107,3 +107,22 @@ resource "aws_subnet" "subnet4" {
   vpc_id     = aws_vpc.example.id
   cidr_block = "10.0.4.0/24"
 }
+
+#####################
+#Solution 2 :
+#####################
+
+variable "subnet_cidr_blocks" {
+  type = list
+  default = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24", "10.0.4.0/24"]
+}
+
+resource "aws_subnet" "exampe_subnets" {
+  dynamic "subnet" {
+    for_each = var.subnet_cidr_blocks
+    content {
+      vpc_id = aws_vpc.example.id
+      cidr_block = subnet.value
+    }
+  }
+}
