@@ -15,9 +15,14 @@ resource "aws_vpc" "main" {
   }
 }
 
+variable "subnet_type" {
+  type = string
+  default = "public"
+}
+
 resource "aws_subnet" "example_1" {
   vpc_id                  = aws_vpc.main.id
-  cidr_block              = "10.0.1.0/24"
+  cidr_block              = var.subnet_type == "public" ? "10.0.1.0/24" : "10.0.2.0/24"
   map_public_ip_on_launch = true
   tags = {
     Name = "example_1"
@@ -102,9 +107,14 @@ resource "aws_security_group" "allow_web" {
   }
 }
 
+variable "rds_env" {
+  type = string
+  default = "prod"
+}
+
 resource "aws_db_instance" "example_db" {
-  allocated_storage    = 20
-  storage_type         = "gp2"
+  allocated_storage    = var.rds_env == "prod" ? 50: 20
+  storage_type         = var.rds_env == "prod" ? "gp3" : "gp2"
   engine               = "mysql"
   engine_version       = "5.7"
   instance_class       = "db.t2.micro"
