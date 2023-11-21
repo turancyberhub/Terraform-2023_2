@@ -39,6 +39,7 @@ resource "aws_subnet" "example_2" {
 }
 
 resource "aws_internet_gateway" "gw" {
+  count = var.subnet_type == "public" ? 1 : 0
   vpc_id = aws_vpc.main.id
   tags = {
     Name = "main"
@@ -46,6 +47,7 @@ resource "aws_internet_gateway" "gw" {
 }
 
 resource "aws_route_table" "rtb" {
+  count = var.subnet_type == "public" ? 1 : 0
   vpc_id = aws_vpc.main.id
   route {
     cidr_block = "0.0.0.0/0"
